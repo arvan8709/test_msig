@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Phonebook Entry</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>Delete Phonebook Entry</h1>
+        <nav>
+            <ul>
+                <li><a href="#" class="active">Deleted</a></li>
+                <li><a href="/list.html">Data</a></li>
+            </ul>
+        </nav>
+    </header>
+    <form id="deleteForm">
+        <label for="id">ID to Delete:</label>
+        <input type="text" id="id" name="id" readonly>
+
+        <button type="submit">Delete</button>
+    </form>
+</div>
+
+<script>
+    function getQueryParam(param) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
+    }
+
+    window.onload = function () {
+        const id = getQueryParam('id');
+        if (id) {
+            document.getElementById('id').value = id;
+        } else {
+            alert('No ID provided in the URL.');
+        }
+    };
+
+    document.getElementById('deleteForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const id = document.getElementById('id').value;
+
+        if (id) {
+            fetch(`/api/phonebook/delete/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Phonebook entry deleted successfully!');
+                    window.location.href = '/list.html';
+                } else {
+                    return response.json().then(err => { throw new Error(err.message); });
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting entry:', error);
+                alert('Failed to delete the phonebook entry.');
+            });
+        } else {
+            alert('No ID provided for deletion.');
+        }
+    });
+</script>
+
+</body>
+</html>
